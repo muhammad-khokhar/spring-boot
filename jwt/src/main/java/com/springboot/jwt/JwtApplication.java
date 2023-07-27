@@ -6,7 +6,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 
 import com.springboot.jwt.config.RsaKeyProperties;
 
-@EnableConfigurationProperties(RsaKeyProperties.class)
+// @EnableConfigurationProperties(RsaKeyProperties.class)
 @SpringBootApplication
 public class JwtApplication {
 
