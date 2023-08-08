@@ -29,30 +29,31 @@ import com.nimbusds.jose.jwk.RSAKey;
 import com.nimbusds.jose.jwk.source.JWKSource;
 import com.nimbusds.jose.proc.SecurityContext;
 
-@Configuration
-@Import(OAuth2AuthorizationServerConfiguration.class)
+@Configuration(proxyBeanMethods = false)
 public class AuthorizationServerConfig {
-    @Bean
-    public RegisteredClientRepository registeredClientRepository() {
-        RegisteredClient registeredClient = RegisteredClient.withId(UUID.randomUUID().toString())
-                .clientId("articles-client")
-                .clientSecret("{noop}secret")
-                .clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_BASIC)
-                .authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
-                .authorizationGrantType(AuthorizationGrantType.REFRESH_TOKEN)
-                .redirectUri("http://127.0.0.1:8080/login/oauth2/code/articles-client-oidc")
-                .redirectUri("http://127.0.0.1:8080/authorized")
-                .scope(OidcScopes.OPENID)
-                .scope("articles.read")
-                .build();
-        return new InMemoryRegisteredClientRepository(registeredClient);
-    }
 
     @Bean
     @Order(Ordered.HIGHEST_PRECEDENCE)
     public SecurityFilterChain authServerSecurityFilterChain(HttpSecurity http) throws Exception {
         OAuth2AuthorizationServerConfiguration.applyDefaultSecurity(http);
         return http.formLogin(Customizer.withDefaults()).build();
+    }
+
+    @Bean
+    public RegisteredClientRepository registeredClientRepository() {
+        RegisteredClient registeredClient = RegisteredClient.withId(UUID.randomUUID().toString())
+          .clientId("articles-client")
+          .clientSecret("{noop}secret")
+          .clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_BASIC)
+          .authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
+          .authorizationGrantType(AuthorizationGrantType.REFRESH_TOKEN)
+          .redirectUri("http://127.0.0.1:8080/login/oauth2/code/articles-client-oidc")
+          .redirectUri("http://127.0.0.1:8080/authorized")
+          .scope(OidcScopes.OPENID)
+          .scope("articles.read")
+          .build();
+
+        return new InMemoryRegisteredClientRepository(registeredClient);
     }
 
     @Bean
@@ -67,9 +68,9 @@ public class AuthorizationServerConfig {
         RSAPublicKey publicKey = (RSAPublicKey) keyPair.getPublic();
         RSAPrivateKey privateKey = (RSAPrivateKey) keyPair.getPrivate();
         return new RSAKey.Builder(publicKey)
-                .privateKey(privateKey)
-                .keyID(UUID.randomUUID().toString())
-                .build();
+          .privateKey(privateKey)
+          .keyID(UUID.randomUUID().toString())
+          .build();
     }
 
     private static KeyPair generateRsaKey() {
@@ -87,7 +88,7 @@ public class AuthorizationServerConfig {
     @Bean
     public ProviderSettings providerSettings() {
         return ProviderSettings.builder()
-                .issuer("http://auth-server:9000")
-                .build();
+          .issuer("http://localhost:9000")
+          .build();
     }
 }
